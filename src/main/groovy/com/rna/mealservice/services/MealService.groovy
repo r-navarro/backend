@@ -27,8 +27,18 @@ class MealService {
         ModelsMapper.convert(meal)
     }
 
-    Page<Meal> findMeals(Pageable pageable) {
-        mealRepository.findAll(pageable).map { ModelsMapper.convert(it) } as Page<Meal>
+    Page<Meal> findMeals(List<String> names, List<String> ingredients, Pageable pageable) {
+        def mealDocuments
+        if (names && ingredients) {
+            mealDocuments = mealRepository.findAllByIngredientsInOrNameIn(ingredients, names, pageable)
+        } else if (names) {
+            mealDocuments = mealRepository.findAllByNameIn(names, pageable)
+        } else if (ingredients) {
+            mealDocuments = mealRepository.findAllByIngredientsIn(ingredients, pageable)
+        } else {
+            mealDocuments = mealRepository.findAll(pageable)
+        }
+        mealDocuments.map { ModelsMapper.convert(it) } as Page<Meal>
     }
 
     Meal updateMeal(Meal mealToUpdate) {
@@ -37,7 +47,7 @@ class MealService {
         }
         meal.name = mealToUpdate.name
         meal.score = mealToUpdate.score
-        meal.tags = mealToUpdate.tags
+        meal.ingredients = mealToUpdate.ingredients
         return ModelsMapper.convert(mealRepository.save(meal))
     }
 
@@ -47,7 +57,12 @@ class MealService {
 
     }
 
-    Page<Meal> findMealsByTags(List<String> tags, Pageable pageable) {
-        mealRepository.findAllByTagsIn(tags, pageable).map { ModelsMapper.convert(it) } as Page<Meal>
+    Page<Meal> searchMealNames(String name, Pageable pageable) {
+        if (name.length() > 2) {
+            return mealRepository.findByNameLikeIgnoreCase(name, pageable).map {
+                ModelsMapper.convert(it)
+            } as Page<Meal>
+        }
+        Page.empty()
     }
 }

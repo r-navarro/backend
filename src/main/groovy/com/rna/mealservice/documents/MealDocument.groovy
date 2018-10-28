@@ -1,5 +1,6 @@
 package com.rna.mealservice.documents
 
+import groovy.transform.EqualsAndHashCode
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
@@ -9,13 +10,15 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
 @Document
+@EqualsAndHashCode(includes = 'name')
 class MealDocument {
 
     @Id
-    @Indexed(unique = false)
     String name
     Integer score
-    List<String> tags
+    @Indexed
+    List<String> ingredients
+    String recipe
     @CreatedDate
     LocalDateTime creationDate
     @LastModifiedDate

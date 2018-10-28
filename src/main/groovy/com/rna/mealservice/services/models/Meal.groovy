@@ -3,5 +3,6 @@ package com.rna.mealservice.services.models
 class Meal {
     String name
     Integer score
-    List<String> tags
+    String recipe
+    List<String> ingredients
 }

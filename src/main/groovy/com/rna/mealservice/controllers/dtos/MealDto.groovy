@@ -8,5 +8,6 @@ class MealDto {
     String name
     @NotNull(message = "Score cannot be empty")
     Integer score
-    List<String> tags
+    String recipe
+    List<String> ingredients
 }

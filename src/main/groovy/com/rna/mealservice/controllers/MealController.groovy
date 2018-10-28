@@ -1,6 +1,5 @@
 package com.rna.mealservice.controllers
 
-
 import com.rna.mealservice.controllers.dtos.MealDto
 import com.rna.mealservice.controllers.mapper.DtoMapper
 import com.rna.mealservice.services.MealService
@@ -30,12 +29,18 @@ class MealController {
         DtoMapper.convert(mealService.findMeal(id))
     }
 
+    @GetMapping("/meals/search")
+    Page<MealDto> searchMeal(@RequestParam("name") String name, Pageable pageable) {
+        mealService.searchMealNames(name, pageable).map { DtoMapper.convert(it) } as Page<MealDto>
+    }
+
     @GetMapping("/meals")
-    Page<MealDto> findMeals(Pageable pageable, @RequestParam(required = false) List<String> tags) {
-        if (tags) {
-            return mealService.findMealsByTags(tags, pageable).map { DtoMapper.convert(it) } as Page<MealDto>
-        }
-        mealService.findMeals(pageable).map { DtoMapper.convert(it) } as Page<MealDto>
+    Page<MealDto> findMeals(Pageable pageable,
+                            @RequestParam(name = 'names', required = false) List<String> names,
+                            @RequestParam(name = 'ingredients', required = false) List<String> ingredients) {
+        mealService.findMeals(names, ingredients, pageable).map {
+            DtoMapper.convert(it)
+        } as Page<MealDto>
     }
 
     @PutMapping("/meals")

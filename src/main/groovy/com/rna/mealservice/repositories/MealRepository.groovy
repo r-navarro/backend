@@ -9,7 +9,13 @@ interface MealRepository extends PagingAndSortingRepository<MealDocument, String
 
     Optional<MealDocument> findByName(String name)
 
-    Page<MealDocument> findAllByTagsIn(List<String> tags, Pageable pageable)
+    Page<MealDocument> findAllByIngredientsIn(List<String> ingredients, Pageable pageable)
+
+    Page<MealDocument> findAllByNameIn(List<String> names, Pageable pageable)
 
     void deleteByName(String name)
+
+    Page<MealDocument> findByNameLikeIgnoreCase(String name, Pageable pageable)
+
+    Page<MealDocument> findAllByIngredientsInOrNameIn(List<String> ingredients, List<String> names, Pageable pageable)
 }

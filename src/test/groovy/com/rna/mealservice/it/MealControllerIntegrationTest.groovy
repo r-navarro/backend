@@ -42,7 +42,7 @@ class MealControllerIntegrationTest extends AbstractIntegrationTest {
 
     def "Create a meal"() {
         given: "create a meal"
-        def mealDto = new MealDto(name: mealName, score: 1, tags: ["toto"])
+        def mealDto = new MealDto(name: mealName, score: 1, ingredients: ["toto"])
         def json = mapper.writeValueAsString(mealDto)
 
         when: "Call create meal endpoint"
@@ -79,7 +79,7 @@ class MealControllerIntegrationTest extends AbstractIntegrationTest {
     def "get meals"() {
         given:
         (0..5).each {
-            mealRepository.save(new MealDocument(name: "meal$it", score: it, tags: ["fn$it".toString()]))
+            mealRepository.save(new MealDocument(name: "meal$it", score: it, ingredients: ["fn$it".toString()]))
         }
 
         when:
@@ -93,7 +93,7 @@ class MealControllerIntegrationTest extends AbstractIntegrationTest {
     @WithMockUser
     def "modify meal"() {
         given:
-        def mealDto = new MealDto(name: mealName, score: 1, tags: ["toto_modif"])
+        def mealDto = new MealDto(name: mealName, score: 1, ingredients: ["toto_modif"])
         def json = mapper.writeValueAsString(mealDto)
 
         when:
@@ -102,18 +102,48 @@ class MealControllerIntegrationTest extends AbstractIntegrationTest {
         then:
         result.andExpect(status().isOk())
         result.andExpect(jsonPath('$.score').value("1"))
-        result.andExpect(jsonPath('$.tags').value("toto_modif"))
+        result.andExpect(jsonPath('$.ingredients').value("toto_modif"))
         mealRepository.findByName(mealName)
     }
 
     @WithMockUser
-    def "find meals by tags"() {
+    def "find meals by ingredients"() {
         when:
-        def result = mockMvc.perform(get("/meals?tags=toto_modif, fn1"))
+        def result = mockMvc.perform(get("/meals?ingredients=toto_modif, fn1"))
 
         then:
         result.andExpect(status().isOk())
         result.andExpect(jsonPath('$.content.length()').value(2))
+    }
+
+    @WithMockUser
+    def "find meals by names"() {
+        when:
+        def result = mockMvc.perform(get("/meals?names=meal2, meal3"))
+
+        then:
+        result.andExpect(status().isOk())
+        result.andExpect(jsonPath('$.content.length()').value(2))
+    }
+
+    @WithMockUser
+    def "find meals by names and ingredients"() {
+        when:
+        def result = mockMvc.perform(get("/meals?names=meal2, meal3&ingredients=toto_modif"))
+
+        then:
+        result.andExpect(status().isOk())
+        result.andExpect(jsonPath('$.content.length()').value(3))
+    }
+
+    @WithMockUser
+    def "Search meals by name"() {
+        when:
+        def result = mockMvc.perform(get("/meals/search?name=test"))
+
+        then:
+        result.andExpect(status().isOk())
+        result.andExpect(jsonPath('$.content.length()').value(1))
     }
 
     @WithMockUser

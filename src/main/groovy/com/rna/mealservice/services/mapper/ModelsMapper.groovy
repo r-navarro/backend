@@ -5,11 +5,11 @@ import com.rna.mealservice.services.models.Meal
 
 class ModelsMapper {
     static Meal convert(MealDocument source) {
-        new Meal(name: source?.name, score: source?.score, tags: source?.tags)
+        new Meal(name: source?.name, score: source?.score, ingredients: source?.ingredients, recipe: source?.recipe)
     }
 
     static MealDocument convert(Meal source) {
-        new MealDocument(name: source?.name, score: source?.score, tags: source?.tags)
+        new MealDocument(name: source?.name, score: source?.score, ingredients: source?.ingredients, recipe: source?.recipe)
     }
 
 }
