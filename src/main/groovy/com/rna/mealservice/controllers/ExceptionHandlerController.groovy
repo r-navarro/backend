@@ -27,7 +27,7 @@ class ExceptionHandlerController {
         def fieldErrors = result.getFieldErrors()
         def messages = []
         fieldErrors.each {
-            messages << "field : $it.field with value $it.rejectedValue : $it.defaultMessage"
+            messages << "$it.defaultMessage"
         }
         new ErrorMessage(message:messages.join(','))
     }
