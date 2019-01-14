@@ -79,7 +79,7 @@ class MealControllerIntegrationTest extends AbstractIntegrationTest {
     def "get meals"() {
         given:
         (0..5).each {
-            mealRepository.save(new MealDocument(name: "meal$it", score: it, ingredients: ["fn$it".toString()]))
+            mealRepository.save(new MealDocument(name: "meal$it", score: it, ingredients: ["ingre$it".toString(), "${it}dient".toString()]))
         }
 
         when:
@@ -109,7 +109,7 @@ class MealControllerIntegrationTest extends AbstractIntegrationTest {
     @WithMockUser
     def "find meals by ingredients"() {
         when:
-        def result = mockMvc.perform(get("/meals?ingredients=toto_modif, fn1"))
+        def result = mockMvc.perform(get("/meals?ingredients=toto_modif, ingre1"))
 
         then:
         result.andExpect(status().isOk())
@@ -140,6 +140,16 @@ class MealControllerIntegrationTest extends AbstractIntegrationTest {
     def "Search meals by name"() {
         when:
         def result = mockMvc.perform(get("/meals/search?name=test"))
+
+        then:
+        result.andExpect(status().isOk())
+        result.andExpect(jsonPath('$.content.length()').value(1))
+    }
+
+    @WithMockUser
+    def "Search ingredient by name"() {
+        when:
+        def result = mockMvc.perform(get("/meals/ingredients?name=ingre"))
 
         then:
         result.andExpect(status().isOk())
