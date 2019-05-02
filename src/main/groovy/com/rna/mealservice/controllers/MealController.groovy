@@ -3,14 +3,16 @@ package com.rna.mealservice.controllers
 import com.rna.mealservice.controllers.dtos.MealDto
 import com.rna.mealservice.controllers.mapper.DtoMapper
 import com.rna.mealservice.services.MealService
+import groovy.transform.CompileStatic
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 import javax.validation.Valid
 
+@CompileStatic
 @RestController
 class MealController {
 
@@ -19,38 +21,37 @@ class MealController {
 
     @PostMapping("/meals")
     @ResponseStatus(HttpStatus.CREATED)
-    MealDto createMeal(@Valid @RequestBody MealDto mealDto) {
-        def meal = mealService.createMeal(DtoMapper.convert(mealDto))
-        DtoMapper.convert(meal)
+    Mono<MealDto> createMeal(@Valid @RequestBody MealDto mealDto) {
+        mealService.createMeal(DtoMapper.convert(mealDto)).map { DtoMapper.convert it }
+
     }
 
     @GetMapping("/meals/{id}")
-    MealDto findMeal(@PathVariable("id") String id) {
-        DtoMapper.convert(mealService.findMeal(id))
+    Mono<MealDto> findMeal(@PathVariable("id") String id) {
+        mealService.findMeal(id).map { DtoMapper.convert it }
     }
 
     @GetMapping("/meals/search")
-    Page<MealDto> searchMeal(@RequestParam("name") String name, Pageable pageable) {
-        mealService.searchMealNames(name, pageable).map { DtoMapper.convert(it) } as Page<MealDto>
+    Flux<MealDto> searchMeal(@RequestParam("name") String name) {
+        mealService.searchMealNames(name, null).map { DtoMapper.convert(it) }
     }
 
     @GetMapping("/meals")
-    Page<MealDto> findMeals(Pageable pageable,
-                            @RequestParam(name = 'names', required = false) List<String> names,
-                            @RequestParam(name = 'ingredients', required = false) List<String> ingredients) {
-        mealService.findMeals(names, ingredients, pageable).map {
+    Flux<MealDto> findMeals(
+            @RequestParam(name = 'names', required = false) List<String> names,
+            @RequestParam(name = 'ingredients', required = false) List<String> ingredients) {
+        mealService.findMeals(names, ingredients).map {
             DtoMapper.convert(it)
-        } as Page<MealDto>
+        }
     }
 
     @PutMapping("/meals")
-    MealDto updateMeal(@Valid @RequestBody MealDto mealDto) {
-        def update = mealService.updateMeal(DtoMapper.convert(mealDto))
-        DtoMapper.convert(update)
+    Mono<MealDto> updateMeal(@Valid @RequestBody MealDto mealDto) {
+        mealService.updateMeal(DtoMapper.convert(mealDto)).map { DtoMapper.convert it }
     }
 
     @DeleteMapping("/meals/{id}")
-    void deleteMeal(@PathVariable("id") String id) {
+    Mono<Void> deleteMeal(@PathVariable("id") String id) {
         mealService.deleteMeal(id)
     }
 }

@@ -5,21 +5,24 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.repository.PagingAndSortingRepository
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
-interface MealRepository extends PagingAndSortingRepository<MealDocument, String> {
+interface MealRepository extends ReactiveCrudRepository<MealDocument, String> {
 
-    Optional<MealDocument> findByName(String name)
+    Mono<MealDocument> findByName(String name)
 
-    Page<MealDocument> findAllByIngredientsIn(List<String> ingredients, Pageable pageable)
+    Flux<MealDocument> findAllByIngredientsIn(List<String> ingredients)
 
-    Page<MealDocument> findAllByNameIn(List<String> names, Pageable pageable)
+    Flux<MealDocument> findAllByNameIn(List<String> names)
 
-    void deleteByName(String name)
+    Mono<Void> deleteByName(String name)
 
-    Page<MealDocument> findByNameLikeIgnoreCase(String name, Pageable pageable)
+    Flux<MealDocument> findByNameLikeIgnoreCase(String name, Pageable pageable)
 
-    Page<MealDocument> findAllByIngredientsInOrNameIn(List<String> ingredients, List<String> names, Pageable pageable)
+    Flux<MealDocument> findAllByIngredientsInOrNameIn(List<String> ingredients, List<String> names)
 
     @Query("{'ingredients' : {\$regex: ?0, \$options: 'i'}}")
-    Page<MealDocument> findByIngredientsLikeIgnoreCase(String name, Pageable pageable)
+    Flux<MealDocument> findByIngredientsLikeIgnoreCase(String name)
 }

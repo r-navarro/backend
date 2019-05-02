@@ -14,3 +14,9 @@ rnavarro\.iml
 src/main/resources/application-prod\.properties
 
 src/main/resources/application-dev\.properties
+
+*.iml
+
+*.ipr
+
+*.iws

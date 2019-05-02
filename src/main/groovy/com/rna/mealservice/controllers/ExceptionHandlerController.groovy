@@ -3,6 +3,7 @@ package com.rna.mealservice.controllers
 import com.rna.mealservice.controllers.dtos.ErrorMessage
 import com.rna.mealservice.controllers.exceptions.MealNotFoundException
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -15,7 +16,14 @@ class ExceptionHandlerController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(MealNotFoundException)
     @ResponseBody
-    def handleUserNotFound(MealNotFoundException e){
+    def handleMealNotFound(MealNotFoundException e){
+        new ErrorMessage(message:e.message)
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(UsernameNotFoundException)
+    @ResponseBody
+    def handleUserNotFound(UsernameNotFoundException e){
         new ErrorMessage(message:e.message)
     }
 

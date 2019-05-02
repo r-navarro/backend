@@ -1,68 +1,78 @@
 package com.rna.mealservice.services
 
 import com.rna.mealservice.controllers.exceptions.MealNotFoundException
+import com.rna.mealservice.documents.MealDocument
 import com.rna.mealservice.repositories.MealRepository
 import com.rna.mealservice.services.mapper.ModelsMapper
 import com.rna.mealservice.services.models.Meal
+import groovy.transform.CompileStatic
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
+@CompileStatic
 @Service
 class MealService {
 
     @Autowired
     MealRepository mealRepository
 
-    Meal createMeal(Meal meal) {
+    Mono<Meal> createMeal(Meal meal) {
         def mealDocument = ModelsMapper.convert(meal)
-        def savedMeal = mealRepository.save(mealDocument)
-
-        ModelsMapper.convert(savedMeal)
+        mealRepository.save(mealDocument).map { ModelsMapper.convert it }
     }
 
-    Meal findMeal(String name) {
-        def meal = mealRepository.findByName(name).orElseThrow { new MealNotFoundException(name) }
-        ModelsMapper.convert(meal)
+    Mono<Meal> findMeal(String name) {
+        mealRepository.findByName(name).switchIfEmpty(notFoundFallback(name)).map { ModelsMapper.convert it }
+
     }
 
-    Page<Meal> findMeals(List<String> names, List<String> ingredients, Pageable pageable) {
+    Flux<Meal> findMeals(List<String> names, List<String> ingredients) {
         def mealDocuments
         if (names && ingredients) {
-            mealDocuments = mealRepository.findAllByIngredientsInOrNameIn(ingredients, names, pageable)
+            mealDocuments = mealRepository.findAllByIngredientsInOrNameIn(ingredients, names)
         } else if (names) {
-            mealDocuments = mealRepository.findAllByNameIn(names, pageable)
+            mealDocuments = mealRepository.findAllByNameIn(names)
         } else if (ingredients) {
-            mealDocuments = mealRepository.findAllByIngredientsIn(ingredients, pageable)
+            mealDocuments = mealRepository.findAllByIngredientsIn(ingredients)
         } else {
-            mealDocuments = mealRepository.findAll(pageable)
+            mealDocuments = mealRepository.findAll()
         }
-        mealDocuments.map { ModelsMapper.convert(it) } as Page<Meal>
+        mealDocuments.map { ModelsMapper.convert it }
     }
 
-    Meal updateMeal(Meal mealToUpdate) {
-        def meal = mealRepository.findByName(mealToUpdate.name).orElseThrow {
-            new MealNotFoundException(mealToUpdate.name)
+    Mono<Meal> updateMeal(Meal mealToUpdate) {
+        mealRepository.findByName(mealToUpdate.name)
+                .switchIfEmpty(notFoundFallback(mealToUpdate.name))
+                .doOnSuccess {
+            it.name = mealToUpdate.name
+            it.score = mealToUpdate.score
+            it.ingredients = mealToUpdate.ingredients
+            mealRepository.save(it).subscribe()
+        }.map { ModelsMapper.convert it }
+
+    }
+
+    Mono<Void> deleteMeal(String name) {
+        mealRepository.findByName(name)
+                .switchIfEmpty(Mono.error(new MealNotFoundException(name)))
+                .flatMap {
+            mealRepository.delete(it).then()
         }
-        meal.name = mealToUpdate.name
-        meal.score = mealToUpdate.score
-        meal.ingredients = mealToUpdate.ingredients
-        return ModelsMapper.convert(mealRepository.save(meal))
     }
 
-    void deleteMeal(String name) {
-        mealRepository.findByName(name).orElseThrow { new MealNotFoundException(name) }
-        mealRepository.deleteByName(name)
-
-    }
-
-    Page<Meal> searchMealNames(String name, Pageable pageable) {
+    Flux<Meal> searchMealNames(String name, Pageable pageable) {
         if (name.length() > 2) {
             return mealRepository.findByNameLikeIgnoreCase(name, pageable).map {
                 ModelsMapper.convert(it)
-            } as Page<Meal>
+            }
         }
-        Page.empty()
+        Flux.empty()
+    }
+
+    static Mono<MealDocument> notFoundFallback(String name) {
+        Mono.error(new MealNotFoundException(name))
     }
 }
