@@ -9,7 +9,11 @@ out/
 
 gradle/
 
-rnavarro\.iml
+*\.iml
+
+*\.ipr
+
+*\.iws
 
 src/main/resources/application-prod\.properties
 
