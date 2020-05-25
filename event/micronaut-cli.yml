@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: event
+---
+testFramework: spock
+sourceLanguage: kotlin

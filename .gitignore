@@ -1,20 +1,24 @@
+# Ignore Gradle project-specific cache directory
+.gradle
 
-\.idea/
-
-build/
-
-out/
-
-\.gradle/
-
-gradle/
-
-*\.iml
-
-*\.ipr
-
-*\.iws
-
-src/main/resources/application-prod\.properties
-
-src/main/resources/application-dev\.properties
+# Ignore Gradle build output directory
+build
+/meal/src/main/resources/application-home.yml
+/gateway/src/main/resources/application-home.yaml
+/backend.ipr
+/backend.iws
+/rnavarro.iml
+/rnavarro.main.iml
+/rnavarro.test.iml
+/meal/backend.ipr
+/meal/backend.iws
+/meal/backend.rnavarro.main.iml
+/meal/backend.rnavarro.test.iml
+/meal/rnavarro.iml
+/meal/rnavarro.main.iml
+/meal/rnavarro.meal.iml
+/meal/rnavarro.meal.main.iml
+/meal/rnavarro.meal.test.iml
+/meal/rnavarro.test.iml
+/.idea/
+/gradle/

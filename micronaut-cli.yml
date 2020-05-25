@@ -1,5 +1,0 @@
-profile: service
-defaultPackage: backend.micronaut
----
-testFramework: spock
-sourceLanguage: kotlin
