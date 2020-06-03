@@ -22,6 +22,10 @@ class UsersRepository(private val mongoClient: MongoClient) {
         return Single.fromPublisher(collection.find(Filters.eq("name", id)).limit(1).first())
     }
 
+    fun exist(id: String): Single<Boolean> {
+        return Single.fromPublisher(collection.countDocuments(Filters.eq("name", id))).map { it > 0 }
+    }
+
     fun list(): Single<List<User>> {
         return Flowable.fromPublisher(collection.find()).toList()
     }

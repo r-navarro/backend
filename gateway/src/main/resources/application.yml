@@ -19,14 +19,13 @@ micronaut:
           secret:
             generator:
               secret: pleaseChangeThisSecretForANewOne
-      writer:
+      propagation:
+        enabled: true
+        service-id-regex: "shutters"
         header:
           enabled: true
           headerName: "Authorization"
           prefix: "Bearer "
-      propagation:
-        enabled: true
-        service-id-regex: "shutters"
 
 ---
 mongodb:

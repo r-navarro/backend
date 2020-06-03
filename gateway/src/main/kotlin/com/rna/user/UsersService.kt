@@ -6,69 +6,46 @@ import io.micronaut.context.annotation.Property
 import io.micronaut.security.authentication.providers.PasswordEncoder
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
+import org.slf4j.LoggerFactory
 import javax.annotation.PostConstruct
 
 @Context
 class UsersService(private val usersRepository: UsersRepository, private val passwordEncoder: PasswordEncoder, @Property(name = "admin.password") val adminPassword: String) {
 
+    private val log = LoggerFactory.getLogger(UsersService::class.java)
+
     fun save(user: User): Single<User> {
-        val observable = BehaviorSubject.create<User>()
-        usersRepository.find(user.name)
-                .subscribe(
-                        { observable.onError(RuntimeException("User : ${user.name} already exist")) },
-                        { save(user, observable) }
-                )
-        return observable.singleOrError()
+        return usersRepository.exist(user.name)
+                .flatMap {
+                    if (it) {
+                        Single.error(RuntimeException("User : ${user.name} already exist"))
+                    } else {
+                        usersRepository.save(user.getEncryptedUser(passwordEncoder))
+                    }
+                }
     }
 
     fun delete(name: String): Single<DeleteResult> {
-        val observable = BehaviorSubject.create<DeleteResult>()
-        usersRepository.find(name)
-                .subscribe(
-                        { delete(name, observable) },
-                        { observable.onError(RuntimeException("User : $name doesn't exist")) }
-                )
-        return observable.singleOrError()
+        return usersRepository.exist(name)
+                .flatMap {
+                    if (it) {
+                        usersRepository.delete(name)
+                    } else {
+                        Single.error(RuntimeException("User : $name doesn't exist"))
+                    }
+                }
     }
 
     fun update(name: String, user: User): Single<User> {
-        val observable = BehaviorSubject.create<User>()
-        usersRepository.find(name)
-                .subscribe(
-                        {
-                            user.name = name
-                            update(user, observable)
-                        },
-                        { observable.onError(RuntimeException("User : $name doesn't exist")) }
-                )
-        return observable.singleOrError()
-    }
-
-    private fun save(user: User, observable: BehaviorSubject<User>) {
-        usersRepository.save(user.getEncryptedUser(passwordEncoder)).subscribe(
-                { createdUser ->
-                    observable.onNext(createdUser)
-                    observable.onComplete()
-                },
-                { createError -> observable.onError(createError) })
-    }
-
-    private fun update(user: User, observable: BehaviorSubject<User>) {
-        usersRepository.update(user).subscribe(
-                { createdUser ->
-                    observable.onNext(createdUser)
-                    observable.onComplete()
-                },
-                { createError -> observable.onError(createError) })
-    }
-
-    private fun delete(user: String, observable: BehaviorSubject<DeleteResult>) {
-        usersRepository.delete(user).subscribe(
-                { deletedUser ->
-                    observable.onNext(deletedUser)
-                    observable.onComplete()
-                },
-                { deletedError -> observable.onError(deletedError) })
+        return usersRepository.exist(name)
+                .flatMap {
+                    if (it) {
+                        user.name = name
+                        usersRepository.update(user)
+                    } else {
+                        Single.error(RuntimeException("User : $name doesn't exist"))
+                    }
+                }
     }
 
     fun findAll(): Single<List<User>> {
@@ -80,10 +57,12 @@ class UsersService(private val usersRepository: UsersRepository, private val pas
     }
 
     fun searchRemovePassword(name: String): Single<User> {
-        return usersRepository.find(name).map {
-            it.password = ""
-            return@map it
-        }
+        return usersRepository.find(name)
+                .onErrorReturn { throw RuntimeException("User not found") }
+                .map {
+                    it.password = ""
+                    return@map it
+                }
     }
 
     @PostConstruct

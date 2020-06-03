@@ -10,6 +10,7 @@ import io.micronaut.security.rules.SecurityRule
 import io.micronaut.validation.Validated
 import io.reactivex.Single
 import io.reactivex.exceptions.CompositeException
+import org.slf4j.LoggerFactory
 import javax.validation.Valid
 
 
@@ -17,6 +18,8 @@ import javax.validation.Valid
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
 class UsersController(private val usersService: UsersService) {
+
+    private val log = LoggerFactory.getLogger(UsersController::class.java)
 
     @Get("/{name}")
     fun getUser(name: String, authentication: Authentication): Single<User> {
@@ -62,7 +65,10 @@ class UsersController(private val usersService: UsersService) {
     @Error
     fun errorHandler(e: Throwable): HttpResponse<ApiError> {
         return when (e) {
-            is CompositeException -> HttpResponse.badRequest(ApiError(e.exceptions.map { ce -> ce.localizedMessage }.joinToString(",")))
+            is CompositeException -> {
+                log.warn(e.exceptions.joinToString(",") { ce -> ce.localizedMessage })
+                HttpResponse.badRequest(ApiError(e.exceptions.last().localizedMessage))
+            }
             is RuntimeException -> HttpResponse.badRequest(ApiError(e.message))
             is UnauthorizedException -> HttpResponse.unauthorized()
             else -> HttpResponse.serverError()

@@ -2,8 +2,6 @@ package com.rna.security
 
 import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Factory
-import io.micronaut.security.authentication.providers.PasswordEncoder
-import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import javax.inject.Singleton
