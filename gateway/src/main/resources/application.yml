@@ -42,3 +42,6 @@ micronaut:
       shutters:
         urls:
           - "http://localhost:8082/"
+      events:
+        urls:
+          - "http://localhost:8082/"

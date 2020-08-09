@@ -4,9 +4,9 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts.descending
 import com.mongodb.client.model.Sorts.orderBy
 import com.mongodb.client.result.DeleteResult
+import com.mongodb.client.result.InsertOneResult
 import com.mongodb.reactivestreams.client.MongoClient
 import com.mongodb.reactivestreams.client.MongoCollection
-import com.mongodb.reactivestreams.client.Success
 import io.reactivex.Flowable
 import io.reactivex.Single
 import javax.inject.Singleton
@@ -18,7 +18,7 @@ class EventRepository(val mongoClient: MongoClient) {
         get() = mongoClient.getDatabase("test").getCollection("event", Event::class.java)
 
     fun save(event: Event): Single<Event> {
-        return Single.fromPublisher<Success>(collection.insertOne(event)).map { event }
+        return Single.fromPublisher<InsertOneResult>(collection.insertOne(event)).map { event }
     }
 
     fun findByType(type: String): Single<List<Event>> {

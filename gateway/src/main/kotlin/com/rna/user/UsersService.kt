@@ -1,9 +1,9 @@
 package com.rna.user
 
 import com.mongodb.client.result.DeleteResult
+import com.rna.security.PasswordEncoder
 import io.micronaut.context.annotation.Context
 import io.micronaut.context.annotation.Property
-import io.micronaut.security.authentication.providers.PasswordEncoder
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 import org.slf4j.LoggerFactory

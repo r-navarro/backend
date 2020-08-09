@@ -1,7 +1,7 @@
 package com.rna.user
 
+import com.rna.security.PasswordEncoder
 import io.micronaut.core.annotation.Introspected
-import io.micronaut.security.authentication.providers.PasswordEncoder
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 

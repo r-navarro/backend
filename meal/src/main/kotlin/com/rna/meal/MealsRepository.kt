@@ -2,10 +2,10 @@ package com.rna.meal
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.result.DeleteResult
+import com.mongodb.client.result.InsertOneResult
 import com.mongodb.client.result.UpdateResult
 import com.mongodb.reactivestreams.client.MongoClient
 import com.mongodb.reactivestreams.client.MongoCollection
-import com.mongodb.reactivestreams.client.Success
 import io.reactivex.Flowable
 import io.reactivex.Single
 import javax.inject.Singleton
@@ -17,7 +17,7 @@ class MealsRepository(val mongoClient: MongoClient) {
         get() = mongoClient.getDatabase("test").getCollection("meal", Meal::class.java)
 
     fun save(meal: Meal): Single<Meal> {
-        return Single.fromPublisher<Success>(collection.insertOne(meal)).map { meal }
+        return Single.fromPublisher<InsertOneResult>(collection.insertOne(meal)).map { meal }
     }
 
     fun find(id: String): Single<Meal> {

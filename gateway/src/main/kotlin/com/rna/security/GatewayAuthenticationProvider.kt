@@ -2,7 +2,6 @@ package com.rna.security
 
 import com.rna.user.UsersService
 import io.micronaut.security.authentication.*
-import io.micronaut.security.authentication.providers.PasswordEncoder
 import io.reactivex.Flowable
 import org.reactivestreams.Publisher
 import javax.inject.Singleton

@@ -1,6 +1,6 @@
 package com.rna.event
 
-import com.mongodb.client.result.DeleteResult
+
 import groovy.json.JsonOutput
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
