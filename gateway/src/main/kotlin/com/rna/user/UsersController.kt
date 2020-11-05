@@ -1,6 +1,7 @@
 package com.rna.user
 
 import com.mongodb.client.result.DeleteResult
+import io.micronaut.core.convert.exceptions.ConversionErrorException
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
@@ -69,6 +70,7 @@ class UsersController(private val usersService: UsersService) {
                 log.warn(e.exceptions.joinToString(",") { ce -> ce.localizedMessage })
                 HttpResponse.badRequest(ApiError(e.exceptions.last().localizedMessage))
             }
+            is ConversionErrorException -> HttpResponse.badRequest(ApiError("User not well formatted"))
             is RuntimeException -> HttpResponse.badRequest(ApiError(e.message))
             is UnauthorizedException -> HttpResponse.unauthorized()
             else -> HttpResponse.serverError()

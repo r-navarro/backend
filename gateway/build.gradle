@@ -28,7 +28,11 @@ dependencies {
     implementation platform("io.micronaut:micronaut-bom:$micronautVersion")
     implementation "io.micronaut:micronaut-security-jwt:$micronautJwtVersion"
     implementation "io.micronaut:micronaut-http-client"
-    implementation "io.micronaut.configuration:micronaut-mongo-reactive:$micronautVersion"
+//    implementation( "io.micronaut.configuration:micronaut-mongo-reactive:$micronautVersion"){
+//        exclude group: "org.mongodb", module: "mongodb-driver-reactivestreams"
+//    }
+    implementation( "io.micronaut.mongodb:micronaut-mongo-reactive:$micronautMongoVersion")
+//    implementation group: 'org.mongodb', name: 'mongodb-driver-reactivestreams', version: '4.1.0'
     implementation "io.micronaut:micronaut-http-server-netty"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}"
     implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"

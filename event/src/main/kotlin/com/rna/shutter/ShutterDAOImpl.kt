@@ -9,7 +9,11 @@ import javax.inject.Singleton
 @Singleton
 class ShutterDAOImpl(private val shutterClient: ShutterClient) : ShutterDAO {
 
-    private val log = LoggerFactory.getLogger(ShutterDAOImpl::class.java)
+    companion object {
+        @Suppress("JAVA_CLASS_ON_COMPANION")
+        @JvmStatic
+        private val log = LoggerFactory.getLogger(javaClass.enclosingClass)
+    }
 
     override fun open(id: Int): Single<HttpResponse<*>> {
         val shutterDTO = ShutterDTO(id, true)

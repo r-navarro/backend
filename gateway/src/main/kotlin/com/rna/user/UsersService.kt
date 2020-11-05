@@ -5,7 +5,6 @@ import com.rna.security.PasswordEncoder
 import io.micronaut.context.annotation.Context
 import io.micronaut.context.annotation.Property
 import io.reactivex.Single
-import io.reactivex.subjects.BehaviorSubject
 import org.slf4j.LoggerFactory
 import javax.annotation.PostConstruct
 
@@ -67,6 +66,15 @@ class UsersService(private val usersRepository: UsersRepository, private val pas
 
     @PostConstruct
     fun createAdmin() {
-        save(User("admin", "admin@", adminPassword, listOf("ROLE_ADMIN"))).onErrorReturnItem(User()).blockingGet()
+        log.info("create admin user")
+        save(User("admin", "admin@", adminPassword, listOf("ROLE_ADMIN")))
+                .doOnSuccess {
+                    log.info("Admin user created : ${it.name}")
+                }
+                .onErrorReturn {
+                    log.error(it.localizedMessage)
+                    User("not created")
+                }
+                .subscribe()
     }
 }

@@ -21,7 +21,7 @@ micronaut:
               secret: pleaseChangeThisSecretForANewOne
       propagation:
         enabled: true
-        service-id-regex: "shutters"
+        service-id-regex: "shutters|rooms"
         header:
           enabled: true
           headerName: "Authorization"
@@ -40,6 +40,9 @@ micronaut:
   http:
     services:
       shutters:
+        urls:
+          - "http://localhost:8082/"
+      rooms:
         urls:
           - "http://localhost:8082/"
       events:

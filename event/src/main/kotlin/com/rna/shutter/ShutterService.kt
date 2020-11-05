@@ -9,7 +9,11 @@ import javax.inject.Singleton
 @Singleton
 open class ShutterService(private val shutterDao: ShutterDAO) {
 
-    private val log = LoggerFactory.getLogger(ShutterService::class.java)
+    companion object {
+        @Suppress("JAVA_CLASS_ON_COMPANION")
+        @JvmStatic
+        private val log = LoggerFactory.getLogger(javaClass.enclosingClass)
+    }
 
 
     fun open(id: Int): Single<MessageDTO> {

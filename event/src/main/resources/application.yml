@@ -33,3 +33,6 @@ micronaut:
       shutters:
         urls:
           - "http://nowhere:8081/"
+      rooms:
+        urls:
+          - "https://192.168.0.49/"

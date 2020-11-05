@@ -33,7 +33,7 @@ dependencies {
 
     implementation platform("io.micronaut:micronaut-bom:$micronautVersion")
     implementation "io.micronaut:micronaut-http-client"
-    implementation "io.micronaut.configuration:micronaut-mongo-reactive:$micronautVersion"
+    implementation( "io.micronaut.mongodb:micronaut-mongo-reactive:$micronautMongoVersion")
     implementation "io.micronaut:micronaut-http-server-netty"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}"
     implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
