@@ -17,12 +17,12 @@ open class ShutterService(private val shutterDao: ShutterDAO) {
 
 
     fun open(id: Int): Single<MessageDTO> {
-        log.info("call shutter api (open)")
+        log.debug("call shutter api (open)")
         return callDAO(shutterDao.open(id))
     }
 
     fun close(id: Int): Single<MessageDTO> {
-        log.info("call shutter api (close)")
+        log.debug("call shutter api (close)")
         return callDAO(shutterDao.close(id))
 
     }

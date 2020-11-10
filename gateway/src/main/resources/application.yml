@@ -41,10 +41,16 @@ micronaut:
     services:
       shutters:
         urls:
-          - "http://localhost:8082/"
+          - "http://${EVENT_HOST:localhost}:8082/"
       rooms:
         urls:
-          - "http://localhost:8082/"
+          - "http://${EVENT_HOST:localhost}:8082/"
       events:
         urls:
-          - "http://localhost:8082/"
+          - "http://${EVENT_HOST:localhost}:8082/"
+
+#endpoints:
+#  loggers:
+#    enabled: True
+#    sensitive: False
+#    write-sensitive: False

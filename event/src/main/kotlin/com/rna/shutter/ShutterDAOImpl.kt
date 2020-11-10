@@ -17,13 +17,13 @@ class ShutterDAOImpl(private val shutterClient: ShutterClient) : ShutterDAO {
 
     override fun open(id: Int): Single<HttpResponse<*>> {
         val shutterDTO = ShutterDTO(id, true)
-        log.trace("calling shutter api (open)")
+        log.debug("calling shutter api (open)")
         return shutterClient.call(shutterDTO)
     }
 
     override fun close(id: Int): Single<HttpResponse<*>> {
         val shutterDTO = ShutterDTO(id, false)
-        log.trace("calling shutter api (open)")
+        log.debug("calling shutter api (close)")
         return shutterClient.call(shutterDTO)
     }
 

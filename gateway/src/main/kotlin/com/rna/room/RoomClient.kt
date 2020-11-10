@@ -1,4 +1,4 @@
-package com.rna.shutter
+package com.rna.room
 
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Get
@@ -13,5 +13,9 @@ interface RoomClient {
 
     @Get("/{id}")
     @Retryable(multiplier = "1.5", excludes = [UnknownHostException::class])
-    fun getData(@PathVariable id: Int): Single<HttpResponse<*>>
+    fun getRoomsData(@PathVariable id: Int): Single<HttpResponse<*>>
+
+    @Get("/")
+    @Retryable(multiplier = "1.5", excludes = [UnknownHostException::class])
+    fun getAllRoomsData(): Single<HttpResponse<*>>
 }

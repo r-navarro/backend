@@ -10,18 +10,27 @@ import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.AuthorizationException
 import io.micronaut.security.rules.SecurityRule
 import io.reactivex.Single
+import org.slf4j.LoggerFactory
 
 @Controller("/shutters")
 @Secured(SecurityRule.IS_AUTHENTICATED)
 class ShuttersController(private val shutterClient: ShutterClient) {
 
+    companion object {
+        @Suppress("JAVA_CLASS_ON_COMPANION")
+        @JvmStatic
+        private val log = LoggerFactory.getLogger(javaClass.enclosingClass)
+    }
+
     @Post("/open/{id}")
     fun open(@PathVariable id: Int): Single<HttpResponse<*>> {
+        log.debug("calling open shutter $id")
         return shutterClient.open(id)
     }
 
     @Post("/close/{id}")
     fun close(@PathVariable id: Int): Single<HttpResponse<*>> {
+        log.debug("calling close shutter $id")
         return shutterClient.close(id)
     }
 

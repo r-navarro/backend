@@ -36,3 +36,8 @@ micronaut:
       rooms:
         urls:
           - "https://192.168.0.49/"
+---
+rooms:
+  retention: 1
+  ids:
+    - 1
