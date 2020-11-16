@@ -32,7 +32,7 @@ class RoomsService(
                     .doOnSuccess { httpResponse ->
                         val body = httpResponse.body() as LinkedHashMap<*, *>
                         try {
-                            val roomDataDTO = RoomDataDTO(timestamp = Timestamp.from(Instant.now()), roomId = roomId)
+                            val roomDataDTO = RoomDataDTO(timestamp = Instant.now().epochSecond, roomId = roomId)
                             roomDataDTO.temperature = body["temperature"].toString().toFloat()
                             roomDataDTO.temperatureUnit = body["temperatureUnit"].toString()
                             roomDataDTO.humidity = body["humidity"].toString().toFloat()
@@ -55,7 +55,7 @@ class RoomsService(
     }
 
     private fun persistRoomData(roomDataDTO: RoomDataDTO) {
-        val minus = roomDataDTO.timestamp.toInstant().minus(roomsDataRetention, ChronoUnit.DAYS)
+        val minus = Instant.ofEpochSecond(roomDataDTO.timestamp).minus(roomsDataRetention, ChronoUnit.DAYS)
         roomsRepository.deleteRoomData(Timestamp.from(minus))
                 .map {
                     if (!it.wasAcknowledged()) {
